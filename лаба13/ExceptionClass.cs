@@ -1,12 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace лаба13
 {
-    class ExceptionClass
+    public class ExceptionClass : ApplicationException
     {
+        public ExceptionClass()
+        {
+
+        }
+
+        public ExceptionClass(string str) : base(str)
+        {
+
+        }
+
+        public override string ToString()
+        {
+            return Message;
+        }
     }
 }
