@@ -70,8 +70,7 @@ namespace Hierarchy
             foreach (var person in array)
             {
                 if (person == null) return false;
-                if (string.Compare(person.Return_se_name() + " " + person.Return_name(), element.Return_se_name() + " " +
-                                                                                        element.Return_name(),
+                if (string.Compare(person.ToString(), element.ToString(),
                                    StringComparison.Ordinal) == 0)
                     return true;
             }
@@ -84,16 +83,16 @@ namespace Hierarchy
             if (typeof(T) == typeof(Administration))
                 return new Administration(random_name[Rnd.Next(0, random_name.Length)],
                                               random_se_name[Rnd.Next(0, random_se_name.Length)],
-                                              Rnd.Next(1, 50), Rnd.Next(10, 21) * 1000, random_address[Rnd.Next(0, random_address.Length)]);
+                                              Rnd.Next(1, 5), Rnd.Next(50, 200) * 1000, random_address[Rnd.Next(0, random_address.Length)]);
 
             if (typeof(T) == typeof(Engineer))
                 return new Engineer(random_name[Rnd.Next(0, random_name.Length)],
                                                 random_se_name[Rnd.Next(0, random_se_name.Length)],
-                                                Rnd.Next(1, 50), Rnd.Next(10, 21) * 1000, Rnd.Next(1, 100));
+                                                Rnd.Next(1, 5), Rnd.Next(5, 100) * 1000, Rnd.Next(1, 100));
 
             return new Worker(random_name[Rnd.Next(0, random_name.Length)],
                                           random_se_name[Rnd.Next(0, random_se_name.Length)],
-                                          Rnd.Next(1, 50), Rnd.Next(10, 21) * 1000);
+                                          Rnd.Next(1, 50), Rnd.Next(10, 30) * 1000);
         }
 
         public static void Show<T>(T element)

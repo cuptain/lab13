@@ -1,21 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hierarchy
 {
     //Базовый интерфейс
-    interface IPerson:IComparable
+    public interface IPerson : IComparable
     {
-        string Return_se_name(); //метод возврата фамилии
+        IPerson GetSelf { get; }
 
-        string Return_name(); //метод возврата фамилии
+        IPerson Create(IPerson person);
+
+        Person BasePerson { get; }
 
         void Input(); //метод ввода
 
         void Show(); //метод вывода
+
+        string ToString(); //Вывод
 
         new int CompareTo(object other); //сравнение
     }

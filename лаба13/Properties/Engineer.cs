@@ -4,7 +4,7 @@ using Libriary;
 
 namespace Hierarchy
 {
-    class Engineer : Worker, IPerson, IComparable
+    class Engineer : Worker, IComparable
     {
         protected int factory;
 
@@ -36,7 +36,7 @@ namespace Hierarchy
         }
 
         //Ввод инженера
-        public override void Input()
+        public new void Input()
         {
             string[] input = null;
 
@@ -58,6 +58,26 @@ namespace Hierarchy
             experience = exp;
             salary = money;
             factory = fac;
+        }
+
+        public Engineer(Engineer engineer) : base (engineer.name, engineer.surname
+            , engineer.experience, engineer.salary)
+        {
+            factory = engineer.factory;
+        }
+
+        public IPerson Create(IPerson person)
+        {
+            return new Engineer((Engineer)person);
+        }
+
+        public new Person BasePerson => new Person(name, surname);
+
+        public new static IPerson GetSelf => IPersonCreate.CreateElement<Engineer>();
+
+        public override string ToString()
+        {
+            return BasePerson.ToString();
         }
     }
 }

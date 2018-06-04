@@ -4,7 +4,8 @@
     {
         static void Main(string[] args)
         {
-
+            var textCollection = new TestCollections();
+            textCollection.Start();
         }
     }
 }

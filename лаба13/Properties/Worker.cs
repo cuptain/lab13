@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Libriary;
 
 namespace Hierarchy
 {
     //Производный от Person
-    class Worker : Person, IPerson, IComparable
+    internal class Worker : Person
     {
         protected int experience;
         protected long salary;
@@ -45,21 +40,11 @@ namespace Hierarchy
         //Вывод рабочего
         public override void Show()
         {
-            /*string srok = experience.ToString();
-            if ((srok == "1") || (srok == "21") || (srok == "31") || (srok == "41"))
-                Console.WriteLine(surname + " " + name + "\nСтаж: " + srok + " год\nЗарплата: " +
-                    salary + " тыс. руб.\n");
-            if ((srok[srok.Length - 1] == '2') || (srok[srok.Length - 1] == '3') || (srok[srok.Length - 1] == '4'))
-                Console.WriteLine(surname + " " + name + "\nСтаж: " + srok + " года\nЗарплата: " +
-                    salary + " тыс. руб.\n");
-            else
-                Console.WriteLine(surname + " " + name + "\nСтаж: " + srok + " лет\nЗарплата: " +
-                    salary + " тыс. руб.\n");*/
             Console.WriteLine(surname + " " + name + "\nСтаж: " + experience + "\nЗарплата: " + salary + " тыс. руб.\n");
         }
 
         //Ввод рабочего
-        public override void Input()
+        public new void Input()
         {
             string[] input = null;
 
@@ -77,6 +62,26 @@ namespace Hierarchy
             surname = input[0];
             experience = exp;
             salary = money;
+        }
+
+        public IPerson Create(IPerson person)
+        {
+            return new Worker((Worker)person);
+        }
+
+        public new Person BasePerson => new Person(name, surname);
+
+        public new static IPerson GetSelf => IPersonCreate.CreateElement<Worker>();
+
+        public Worker(Worker worker) : base(worker.BasePerson)
+        {
+            experience = worker.experience;
+            salary = worker.salary;
+        }
+
+        public override string ToString()
+        {
+            return BasePerson.ToString();
         }
     }
 }

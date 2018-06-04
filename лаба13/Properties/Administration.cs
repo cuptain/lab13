@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using FuncThat;
+using Libriary;
 
 namespace Hierarchy
 {
@@ -35,32 +31,22 @@ namespace Hierarchy
         //Вывод администратора
         public override void Show()
         {
-            /*string srok = experience.ToString();
-            if ((srok == "1") || (srok == "21") || (srok == "31") || (srok == "41"))
-                Console.WriteLine(surname + " " + name + "\nСтаж: " + srok + " год\nЗарплата: " + 
-                    salary + " тыс. руб." + "\nРаботает в администрации по адресу: " + address + "\n");
-            if ((srok[srok.Length - 1] == '2') || (srok[srok.Length - 1] == '3') || (srok[srok.Length - 1] == '4'))
-                Console.WriteLine(surname + " " + name + "\nСтаж: " + srok + " года\nЗарплата: " + 
-                    salary + " тыс. руб." + "\nРаботает в администрации по адресу: " + address + "\n");
-            else
-                Console.WriteLine(surname + " " + name + "\nСтаж: " + srok + " лет\nЗарплата: " + 
-                    salary + " тыс. руб." + "\nРаботает в администрации по адресу: " + address + "\n");*/
             Console.WriteLine(surname + " " + name + "\nСтаж: " + experience + "\nЗарплата: " + salary + " тыс. руб." + "\nРаботает в администрации по адресу: " + address + "\n");
         }
 
         //Ввод инженера
-        public override void Input()
+        public new void Input()
         {
             string[] input = null;
             string ad = "";
 
-            string inputFI = Easy.EnterName("Введите Фамилию и Имя инженера, которого необходимо найти: ");
+            string inputFI = Easy.EnterName("Введите Фамилию и Имя администратора, которого необходимо найти: ");
 
-            Console.WriteLine("Введите стаж инженерп: ");
+            Console.WriteLine("Введите стаж администратора: ");
             int exp = Easy.ReadVGran(1, 5, "Стаж инженера");
 
-            Console.WriteLine("Введите зарплату инженера: ");
-            int money = Easy.ReadVGran(5000, 100000, "Зарплата инженера");
+            Console.WriteLine("Введите зарплату администратора: ");
+            int money = Easy.ReadVGran(50000, 200000, "Зарплата инженера");
 
             Regex regex = new Regex(@"(?<!\S)\b[у][л][.][ ][А-Я][а-я]+[,][ ][д][.][ ][1-9]\d*[а-я]*(?!\S)\b");
             bool ok = true;
@@ -97,6 +83,25 @@ namespace Hierarchy
         public object Clone()
         {
             return new Administration(this.name, this.surname, this.experience, this.salary, this.address);
+        }
+
+        public Administration(Administration administration) : base(administration.name, administration.surname
+            , administration.experience, administration.salary)
+        {
+            address = administration.address;
+        }
+
+        public IPerson Create(IPerson person)
+        {
+            return new Administration((Administration)person);
+        }
+        public new Person BasePerson => new Person(name, surname);
+
+        public new static IPerson GetSelf => IPersonCreate.CreateElement<Administration>();
+
+        public override string ToString()
+        {
+            return BasePerson.ToString();
         }
     }
 }

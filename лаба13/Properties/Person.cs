@@ -1,26 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Hierarchy
 {
-    abstract class Person : IPerson, IComparable
+    public class Person : IPerson
     {
-        public string name, surname;
+        protected string name, surname;
 
         //Получение имени
-        public string GetName
-        {
-            get { return name; }
-        }
+        public string GetName => name;
 
         //Получение фамилии
-        public string GetSurname
-        {
-            get { return surname; }
-        }
+        public string GetSurname => surname;
 
         //Конструктор без параметров
         public Person()
@@ -53,13 +44,53 @@ namespace Hierarchy
         }
 
         //Ввод
-        abstract public void Input();
+        public void Input()
+        {
+            string[] input;
+            var inputFi = "";
+            var regex = new Regex(@"^[А-Я][а-я]{1,}[ ][А-Я]{1}[а-я]{1,}$");
+            var ok = true;
+            while (ok)
+            {
+                Console.Write("Введите ФИ рабочего, которого необходимо найти: ");
+                inputFi = Console.ReadLine();
+                if (regex.IsMatch(inputFi))
+                    ok = false;
+                else
+                    Console.WriteLine("Введите фамилию и имя в правильном формате (Фффф Ииии)");
+            }
+
+            input = inputFi.Split(' ');
+
+            name = input[1];
+            surname = input[0];
+        }
         
         //Сравнение
         public int CompareTo(object other)
         {
             Person person = other as Person;
             return String.Compare(GetSurname + " " + GetName, person.GetSurname + " " + person.GetName);
+        }
+
+        public IPerson GetSelf => new Person();
+
+        public Person BasePerson => this;
+
+        public IPerson Create(IPerson person)
+        {
+            return new Person((Person)person);
+        }
+
+        public Person(Person person)
+        {
+            name = person.name;
+            surname = person.surname;
+        }
+
+        public override string ToString()
+        {
+            return surname + " " + name;
         }
     }
 }
