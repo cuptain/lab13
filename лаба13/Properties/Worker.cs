@@ -23,6 +23,8 @@ namespace Hierarchy
             protected set { salary = value; }
         }
 
+        #region Конструкторы
+
         //Конструктор без параметров
         public Worker() : base()
         {
@@ -36,6 +38,29 @@ namespace Hierarchy
             experience = Experience;
             salary = Salary;
         }
+
+        //Создание от персоны
+        public IPerson Create(IPerson person)
+        {
+            return new Worker((Worker)person);
+        }
+
+        //База
+        public new Person BasePerson => new Person(name, surname);
+
+        //Создание рабочего
+        public new static IPerson GetSelf => IPersonCreate.CreateElement<Worker>();
+
+        //Конструктор от рабочего
+        public Worker(Worker worker) : base(worker.BasePerson)
+        {
+            experience = worker.experience;
+            salary = worker.salary;
+        }
+
+        #endregion
+
+        #region Ввод-Вывод
 
         //Вывод рабочего
         public override void Show()
@@ -64,24 +89,25 @@ namespace Hierarchy
             salary = money;
         }
 
-        public IPerson Create(IPerson person)
+        #endregion
+
+        #region Override
+
+        public override bool Equals(object obj)
         {
-            return new Worker((Worker)person);
+            return base.Equals(obj);
         }
 
-        public new Person BasePerson => new Person(name, surname);
-
-        public new static IPerson GetSelf => IPersonCreate.CreateElement<Worker>();
-
-        public Worker(Worker worker) : base(worker.BasePerson)
+        public override int GetHashCode()
         {
-            experience = worker.experience;
-            salary = worker.salary;
+            return base.GetHashCode();
         }
 
         public override string ToString()
         {
             return BasePerson.ToString();
         }
+
+        #endregion
     }
 }

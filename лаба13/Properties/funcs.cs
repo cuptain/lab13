@@ -89,7 +89,7 @@ namespace Libriary
                 inpNum = ReadInt();
                 // Проверка на натуральность
                 if (inpNum <= 0)
-                    Console.WriteLine(name + " должен(но) быть натуральным числом, попробуйте ещё раз:");
+                    Console.WriteLine(name + " должен(но) быть задан натуральным числом, попробуйте ещё раз:");
             } while (inpNum <= 0);
             return inpNum;
         }

@@ -6,419 +6,96 @@ using Hierarchy;
 
 namespace лаба13
 {
-    public class TestCollections
+    class TestCollections
     {
-        private readonly Dictionary<Person, IPerson> _dictionaryPerson;
-        private readonly Dictionary<string, IPerson> _dictionaryString;
-        private readonly List<Person> _listKeys;
-        private readonly List<string> _listString;
-        private readonly Random _rnd = new Random();
+        public Dictionary<Person, Worker> _dictionaryHeritage { get; } //<TKey/TValue>
+        public Dictionary<string, Worker> _dictionaryString { get; } //<string/TValue>
+        public List<Person> _listPerson { get; } //<TKey>
+        public List<string> _listString { get; } //<string>
 
-        public TestCollections()
+        public static Random rnd = new Random(); //random
+
+        public TestCollections(int size) //Создание коллекции
         {
-            _listKeys = new List<Person>();
-            _dictionaryPerson = new Dictionary<Person, IPerson>();
+            _listPerson = new List<Person>();
             _listString = new List<string>();
-            _dictionaryString = new Dictionary<string, IPerson>();
-        }
+            _dictionaryHeritage = new Dictionary<Person, Worker>(size);
+            _dictionaryString = new Dictionary<string, Worker>(size);
 
-        private void Continue()
-        {
-            Console.WriteLine("\n\nДля продолжения нажмите клавишу Enter...");
-            Console.CursorVisible = false;
-            Console.ReadLine();
-        }
-
-        #region Input
-
-        //Ввести человека
-        private IPerson Input()
-        {
-            string[] inputMenu =
-                {"Ввести данные рабочего", "Ввести данные инженера", "Ввести данные администратора", "Назад"};
-            while (true)
+            for (int count = 0; count < size; count++)
             {
-                var sw = Use.Menu("Выберите действие:", inputMenu);
-                switch (sw)
-                {
-                    case 1:
-                        Console.WriteLine("Введите студента для удаления:");
-                        return Worker.GetSelf;
-                    case 2:
-                        Console.WriteLine("Введите сотрудника для удаления:");
-                        return Engineer.GetSelf;
-                    case 3:
-                        Console.WriteLine("Введите учителя для удаления:");
-                        return Administration.GetSelf;
-                    case 4:
-                        return null;
-                }
+                Worker w = CreateWorker(count);
+                Person p = new Person(w.GetName, w.GetSurname);
+                _listPerson.Add(p);
+                _dictionaryHeritage.Add(p, w);
+                _listString.Add(w.GetName.ToString());
+                _dictionaryString.Add(w.GetName.ToString(), w);
             }
         }
 
-        #endregion
-
-        #region Delete
-
-        //Удалить человека
-        private void Delete(ref int k)
+        public static Worker CreateWorker(int a) //Создание рабочего
         {
-            var person = Input();
-            if (_dictionaryPerson.ContainsKey(person.BasePerson))
-            {
-                _listKeys.Remove(person.BasePerson);
-                _dictionaryPerson.Remove(person.BasePerson);
-                _listString.Remove(person.ToString());
-                _dictionaryString.Remove(person.ToString());
-                Console.WriteLine("Объект был удален из коллекции!");
-                if (_listKeys.Count == 0)
-                {
-                    Console.WriteLine("После удаления объекта коллекции опустели!");
-                    k = 4;
-                }
-            }
-            else
-            {
-                throw new ExceptionClass("Заданного объекта в коллекции не было!");
-            }
-
-            Continue();
+            int key = a.GetHashCode();
+            if (key < 0) key = Math.Abs(key);
+            Worker w = new Worker(String.Format("n{0}", key), String.Format("s{0}", key),
+                rnd.Next(1, 50), rnd.Next(10, 21) * 1000);
+            return w;
         }
-
-        #endregion
-
-        #region Add
 
         //Добавить элемент
-        private void Add()
+        public void Add(Worker w)
         {
-            var person = Input();
-            if (_listKeys.Contains(person.BasePerson))
+            bool ok = _listString.Contains(w.GetName.ToString());
+            if (!ok)
             {
-                _listKeys.Add(person.BasePerson);
-                _listString.Add(person.ToString());
-                _dictionaryPerson.Add(person.BasePerson, person);
-                _dictionaryString.Add(person.ToString(), person);
-                Console.WriteLine("Заданный объект был добавлен в коллекции!");
-            }
-            else
-            {
-                throw new ExceptionClass("Заданный объект уже присутствует в колекции!");
-            }
+                Person p = new Person(w.GetName, w.GetSurname);
+                _listPerson.Add(p);
+                _dictionaryHeritage.Add(p, w);
 
-            Continue();
+                _listString.Add(w.GetName.ToString());
+                _dictionaryString.Add(w.GetName.ToString(), w);
+            }
+            else throw new Exception();
         }
 
-        #endregion
+        //Удалить элемент
+        public void Delete(Worker w)
+        {
+            bool ok = _listString.Contains(w.GetName.ToString());
+            if (ok)
+            {
+                Person p = new Person(w.GetName, w.GetSurname);
+                _listPerson.Remove(p);
+                _dictionaryHeritage.Remove(p);
 
-        #region Output
+                _listString.Remove(w.GetName.ToString());
+                _dictionaryString.Remove(w.GetName.ToString());
+            }
+            else throw new Exception();
+        }
 
         //Вывести элементы коллекции
-        private void Output()
+        public void Output()
         {
-            foreach (var person in _dictionaryPerson.Values) person.Show();
-            Continue();
+            Console.WriteLine("List<Person>:");
+            foreach (Person p in _listPerson)
+                p.Show();
+
+            Console.WriteLine();
+            Console.WriteLine("List<String>:");
+            foreach (string str in _listString)
+                Console.WriteLine(str);
+
+            Console.WriteLine();
+            Console.WriteLine("Dictionary<Person, Worker>:");
+            foreach (KeyValuePair<Person, Worker> str in _dictionaryHeritage)
+                Console.WriteLine("Ключ: {0} \n Значение: {1}", str.Key, str.Value);
+
+            Console.WriteLine();
+            Console.WriteLine("Dictionary<String, Worker>:");
+            foreach (KeyValuePair<string, Worker> str in _dictionaryString)
+                Console.WriteLine("Ключ: {0} \n Значение: {1}", str.Key, str.Value);
         }
-
-        #endregion
-
-        public void Start()
-        {
-            string[] menu = {
-                "Создать TestCollection", "Удаление элементов", "Добавление элементов",
-                "Время поиска элемента для каждой коллекции",
-                "Печать коллекции", "Выход"
-            };
-            var k = 4;
-            while (true)
-            {
-                var sw = Use.Menu(k, "Выберите действие:", menu);
-                switch (sw)
-                {
-                    case 1:
-                        CreateCollection(_rnd.Next(1, 1000), ref k);
-                        break;
-                    case 2:
-                        Delete(ref k);
-                        break;
-                    case 3:
-                        Add();
-                        break;
-                    case 4:
-                        Search();
-                        break;
-                    case 5:
-                        Output();
-                        break;
-                    case 6:
-                        return;
-                }
-            }
-        }
-
-        #region CreateCollection
-
-        private void CreateElement(int type)
-        {
-            IPerson person = null;
-            while (true)
-            {
-                switch (type)
-                {
-                    case 1:
-                        person = Worker.GetSelf;
-                        break;
-                    case 2:
-                        person = Engineer.GetSelf;
-                        break;
-                    case 3:
-                        person = Administration.GetSelf;
-                        break;
-                }
-
-                if (!_listKeys.Contains(person.BasePerson) &&
-                    !_dictionaryPerson.ContainsKey(person.BasePerson) &&
-                    !_listString.Contains(person.ToString()) &&
-                    !_dictionaryString.ContainsKey(person.ToString()))
-                    break;
-            }
-
-            _listKeys.Add(person.BasePerson);
-            _dictionaryPerson.Add(person.BasePerson, person);
-            _listString.Add(person.ToString());
-            _dictionaryString.Add(person.ToString(), person);
-        } // Создать элемент
-
-        private void CreateCollection(int size, ref int k)
-        {
-            if (size == 0) throw new ExceptionClass("Ошибка! Размер коллекции не может быть равен нулю!");
-
-            _listKeys.Clear();
-            _dictionaryPerson.Clear();
-            _listString.Clear();
-            _dictionaryString.Clear();
-            k = 0;
-            for (var count = 0; count < size; count++)
-                CreateElement(_rnd.Next(1, 4));
-            Continue();
-        } // Создать коллекцию
-
-        #endregion
-
-        #region TimeOfSearch
-
-        //Поиск в коллекции list<Person>
-        private void SearchInListPerson(IPerson element, string str, ref Stopwatch sw)
-        {
-            sw.Start();
-            Console.WriteLine(str);
-            if (_listKeys.Contains(element.BasePerson))
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-            else
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он не содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-        }
-
-        //Поиск в коллекции list<string>
-        private void SearchInListString(IPerson element, string str, ref Stopwatch sw)
-        {
-            sw.Start();
-            Console.WriteLine(str);
-            if (_listString.Contains(element.ToString()))
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-            else
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он не содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-        }
-
-        //Поиск в коллекции dictionary<Person,IPerson>(по ключам)
-        private void SearchInDictionaryPersonKey(IPerson element, string str, ref Stopwatch sw)
-        {
-            sw.Start();
-            Console.WriteLine(str);
-            if (_dictionaryPerson.ContainsKey(element.BasePerson))
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-            else
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он не содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-        }
-
-        //Поиск в коллекции dictionary<Person,IPerson>(по элементам)
-        private void SearchInDictionaryPersonValue(IPerson element, string str, ref Stopwatch sw)
-        {
-            sw.Start();
-            Console.WriteLine(str);
-            if (_dictionaryPerson.ContainsValue(element))
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-            else
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он не содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-        }
-
-        //Поиск в коллекции dictionary<string,IPerson>
-        private void SearchInDictionaryPerson(IPerson element, string str, ref Stopwatch sw)
-        {
-            sw.Start();
-            Console.WriteLine(str);
-            if (_dictionaryString.ContainsKey(element.ToString()))
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-            else
-            {
-                sw.Stop();
-                Console.WriteLine("Поиск этого элемента (он не содержится в коллекции) потрачено {0} тиков\n",
-                                  sw.ElapsedTicks);
-                sw.Reset();
-            }
-        }
-
-        //Время поиска первого элемента
-        private void SearchFirstElement(IPerson person)
-        {
-            var sw = new Stopwatch();
-
-            SearchInListString(person, "Поиск первого элемента в коллекции list<string>:", ref sw);
-            SearchInListPerson(person, "Поиск первого элемента в коллекции list<Person>:", ref sw);
-            SearchInDictionaryPerson(person, "Поиск первого элемента в коллекции dictionary<string,IPerson>:", ref sw);
-            SearchInDictionaryPersonKey(person,
-                                        "Поиск первого элемента в коллекции dictionary<Person,IPerson>(по ключам):",
-                                        ref sw);
-            SearchInDictionaryPersonValue(person,
-                                          "Поиск первого элемента в коллекции dictionary<Person,IPerson>(по элементам):",
-                                          ref sw);
-        }
-
-        //Время поиска центрального элемента
-        private void SearchCentralElement(IPerson person)
-        {
-            {
-                var sw = new Stopwatch();
-
-                SearchInListString(person, "Поиск центрального элемента в коллекции list<string>:", ref sw);
-                SearchInListPerson(person, "Поиск центрального элемента в коллекции list<Person>:", ref sw);
-                SearchInDictionaryPerson(person, "Поиск центрального элемента в коллекции dictionary<string,IPerson>:",
-                                         ref sw);
-                SearchInDictionaryPersonKey(person,
-                                            "Поиск центрального элемента в коллекции dictionary<Person,IPerson>(по ключам):",
-                                            ref sw);
-                SearchInDictionaryPersonValue(person,
-                                              "Поиск центрального элемента в коллекции dictionary<Person,IPerson>(по элементам):",
-                                              ref sw);
-            }
-        }
-
-        //Время поиска последнего элемента
-        private void SearchLastElement(IPerson person)
-        {
-            {
-                var sw = new Stopwatch();
-
-                SearchInListString(person, "Поиск последнего элемента в коллекции list<string>:", ref sw);
-                SearchInListPerson(person, "Поиск последнего элемента в коллекции list<Person>:", ref sw);
-                SearchInDictionaryPerson(person, "Поиск последнего элемента в коллекции dictionary<string,IPerson>:",
-                                         ref sw);
-                SearchInDictionaryPersonKey(person,
-                                            "Поиск последнего элемента в коллекции dictionary<Person,IPerson>(по ключам):",
-                                            ref sw);
-                SearchInDictionaryPersonValue(person,
-                                              "Поиск последнего элемента в коллекции dictionary<Person,IPerson>(по элементам):",
-                                              ref sw);
-            }
-        }
-
-        //Время поиска элемента, находящегося вне последовательности
-        private void SearchRandomElement(IPerson person)
-        {
-            {
-                var sw = new Stopwatch();
-
-                SearchInListString(person, "Поиск элемента вне коллекции list<string>:", ref sw);
-                SearchInListPerson(person, "Поиск элемента вне коллекции list<Person>:", ref sw);
-                SearchInDictionaryPerson(person, "Поиск элемента вне коллекции dictionary<string,IPerson>:", ref sw);
-                SearchInDictionaryPersonKey(person,
-                                            "Поиск элемента вне коллекции dictionary<Person,IPerson>(по ключам):",
-                                            ref sw);
-                SearchInDictionaryPersonValue(person,
-                                              "Поиск элемента вне коллекции dictionary<Person,IPerson>(по элементам):",
-                                              ref sw);
-            }
-        }
-
-        //Обобщенная функция 
-        private void Search()
-        {
-            var array = _listKeys.ToArray();
-            IPerson person = new Person("Билл", "Гейтс");
-            switch (array.Length)
-            {
-                case 1:
-                    person = person.Create(_dictionaryPerson[array[0]]);
-                    SearchFirstElement(person);
-                    SearchRandomElement(new Worker("Сергей", "Подмышкин", 10, 15000));
-                    Console.WriteLine("Прочие проверки для массива размером 1 бессмысленны");
-                    break;
-                case 2:
-                    person = person.Create(_dictionaryPerson[array[0]]);
-                    SearchFirstElement(person);
-                    person = person.Create(_dictionaryPerson[array[array.Length - 1]]);
-                    SearchLastElement(person);
-                    SearchRandomElement(new Engineer("Сергей", "Подмышкин", 3, 47000, 5));
-                    Console.WriteLine("Прочие проверки для массива размером 2 бессмысленны");
-                    break;
-                default:
-                    person = person.Create(_dictionaryPerson[array[0]]);
-                    SearchFirstElement(person);
-                    person = person.Create(_dictionaryPerson[array[array.Length - 2]]);
-                    SearchCentralElement(person);
-                    person = person.Create(_dictionaryPerson[array[array.Length - 1]]);
-                    SearchLastElement(person);
-                    SearchRandomElement(new Worker("Сергей", "Подмышкин", 10, 15000));
-                    break;
-            }
-
-            Continue();
-        }
-
-        #endregion
+             
     }
 }

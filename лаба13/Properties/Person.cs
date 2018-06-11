@@ -13,13 +13,6 @@ namespace Hierarchy
         //Получение фамилии
         public string GetSurname => surname;
 
-        //Конструктор без параметров
-        public Person()
-        {
-            name = "";
-            surname = "";
-        }
-
         public string Return_name()
         {
             return name;
@@ -30,12 +23,44 @@ namespace Hierarchy
             return surname;
         }
 
+        #region Конструкторы
+
         //Конструктор с параметрами
         public Person(string Name, string Surname)
         {
             name = Name;
             surname = Surname;
         }
+
+        //Конструктор без параметров
+        public Person()
+        {
+            name = "";
+            surname = "";
+        }
+
+        //Создание новой персоны
+        public IPerson GetSelf => new Person();
+
+        //База
+        public Person BasePerson => this;
+
+        //Конструктор от персоны
+        public IPerson Create(IPerson person)
+        {
+            return new Person((Person)person);
+        }
+
+        //Конструктор от персоны
+        public Person(Person person)
+        {
+            name = person.name;
+            surname = person.surname;
+        }
+
+        #endregion
+
+        #region Ввод-Вывод
 
         //Вывод
         public virtual void Show()
@@ -65,7 +90,9 @@ namespace Hierarchy
             name = input[1];
             surname = input[0];
         }
-        
+
+        #endregion
+
         //Сравнение
         public int CompareTo(object other)
         {
@@ -73,24 +100,30 @@ namespace Hierarchy
             return String.Compare(GetSurname + " " + GetName, person.GetSurname + " " + person.GetName);
         }
 
-        public IPerson GetSelf => new Person();
+        #region Override
 
-        public Person BasePerson => this;
-
-        public IPerson Create(IPerson person)
+        //Приравнивание
+        public override bool Equals(object obj)
         {
-            return new Person((Person)person);
+            if (obj is Person)
+            {
+                return ((obj as Person).GetName == GetName && (obj as Person).GetSurname == GetSurname);
+            }
+            return false;
         }
 
-        public Person(Person person)
+        //Хэшкод
+        public override int GetHashCode()
         {
-            name = person.name;
-            surname = person.surname;
-        }
-
+            return (name + surname).GetHashCode();
+        }       
+        
+        //To string
         public override string ToString()
         {
             return surname + " " + name;
         }
+
+        #endregion
     }
 }
